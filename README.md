@@ -14,6 +14,7 @@ Settings > Main > Configuration > Save
 
 ```sh
 python3 -m venv .venv
+. .venv/bin/activate
 pip install --upgrade pip requests
 ```
 
