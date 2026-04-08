@@ -21,5 +21,5 @@ pip install --upgrade pip requests
 ## Launch
 
 ```sh
-python3 kick_butt.py
+. .venv/bin/activate && python3 kick_butt.py
 ```
