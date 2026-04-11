@@ -107,7 +107,7 @@ def stream_tile():
         # Launch new stream
         print("Launching butt...")
         new_proc = start_butt(OUTPUT_PATH)
-        print("  > Butt launched, hit the play button to start broadcasting.")
+        print("  > Butt launched. Once you see butt app, hit play button to start broadcasting.")
 
         # Pre-fetch next config 1 minute before end
         if proc:
