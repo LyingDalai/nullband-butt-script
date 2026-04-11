@@ -13,14 +13,19 @@ Settings > Main > Configuration > Save
 ## Install
 
 ```sh
-cd ~/my_butt/ # or wahtever folder you want
+MY_BUTT="~/my_butt/" # or whatever folder you want to install this to
+cd "$MY_BUTT"
 python3 -m venv .venv
 . .venv/bin/activate
 pip install --upgrade pip requests
 ```
 
+```sh
+
+```
+
 ## Launch
 
 ```sh
-cd ~/my_butt/ && . .venv/bin/activate && python3 kick_butt.py
+cd "$MY_BUTT" && . .venv/bin/activate && python3 kick_butt.py
 ```
