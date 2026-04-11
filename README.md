@@ -10,22 +10,25 @@ Make sure you've saved your favorite config in butt first (including favorite de
 Settings > Main > Configuration > Save
 ```
 
-## Install
+## No install needed
+
+Just create a folder for the script (you can do it in the Finder, no problem)
 
 ```sh
-MY_BUTT="~/my_butt/" # or whatever folder you want to install this to
-cd "$MY_BUTT"
-python3 -m venv .venv
-. .venv/bin/activate
-pip install --upgrade pip requests
+# In the Terminal, this would be:
+mkdir "~/my_butt"
 ```
 
-```sh
-
-```
+Then download the `kick_butt.py` script, and put it in this folder.
+The script can be found here directly:
+https://github.com/LyingDalai/nullband-butt-script/blob/main/kick_butt.py
 
 ## Launch
 
 ```sh
-cd "$MY_BUTT" && . .venv/bin/activate && python3 kick_butt.py
+# To use the script, you have to go to the folder in which the script is:
+cd "~/my_butt"
+
+# Then you can launch the script:
+python3 kick_butt.py
 ```
