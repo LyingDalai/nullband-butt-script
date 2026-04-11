@@ -99,36 +99,46 @@ def start_butt(config_path: Path):
 def stream_tile():
     proc = None
     print("Launching the script, simply press Ctrl+C to stop.")
-    while True:
-        # Fetch & patch config
-        print("Fetching latest config from nullband...")
-        fetch_and_patch_config(OUTPUT_PATH)
-
-        # Launch new stream
-        print("Launching butt...")
-        new_proc = start_butt(OUTPUT_PATH)
-        print("  > Butt launched. Once you see butt app, hit play button to start broadcasting.")
-
-        # Pre-fetch next config 1 minute before end
-        if proc:
-            time.sleep(STREAM_DURATION - PRE_FETCH)
-            print("Fetching new config from nullband...")
+    try:
+        while True:
+            # Fetch & patch config
+            print("Fetching latest config from nullband...")
             fetch_and_patch_config(OUTPUT_PATH)
-            print("Launching new butt...")
-            next_proc = start_butt(OUTPUT_PATH)
-            print("Next stream pre-fetched: hit play button to start.")
+    
+            # Launch new stream
+            print("Launching butt...")
+            new_proc = start_butt(OUTPUT_PATH)
+            print("  > Butt launched. Once you see BUTT app, hit play button to start broadcasting.")
+            print("  > Press Ctrl+C in the Terminal to stop.")
+            # Pre-fetch next config 1 minute before end
+            if proc:
+                time.sleep(STREAM_DURATION - PRE_FETCH)
+                print("Fetching new config from nullband...")
+                fetch_and_patch_config(OUTPUT_PATH)
+                print("Launching new BUTT instance...")
+                next_proc = start_butt(OUTPUT_PATH)
+                print("Next stream pre-fetched: hit play button to start.")
+    
+                # Wait remaining 1 min
+                time.sleep(PRE_FETCH)
+                proc.terminate()
+                proc.wait()
+                print("Previous segment ended, continuing with next stream.")
+                proc = next_proc
+            else:
+                # First iteration, wait full duration
+                time.sleep(STREAM_DURATION)
+                proc = new_proc
+                
+    except KeyboardInterrupt:
+        print("\nStopping stream...")
 
-            # Wait remaining 1 min
-            time.sleep(PRE_FETCH)
+        if proc:
             proc.terminate()
             proc.wait()
-            print("Previous segment ended, continuing with next stream.")
-            proc = next_proc
-        else:
-            # First iteration, wait full duration
-            time.sleep(STREAM_DURATION)
-            proc = new_proc
+            print("BUTT stopped.")
 
+        print("Thank you for broadcasting :)")
 
 # ----------------------------
 # Entry point
