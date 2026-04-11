@@ -98,7 +98,7 @@ def start_butt(config_path: Path):
 # ----------------------------
 def stream_tile():
     proc = None
-    print("Launching the script, simply press Ctrl+C to stop.")
+    print("Launching the script, simply press Ctrl+C to stop (possibly twice).")
     try:
         while True:
             # Fetch & patch config
