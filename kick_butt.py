@@ -2,8 +2,9 @@ import configparser
 import subprocess
 import time
 from pathlib import Path
-
-import requests
+import shutil
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen
 
 """
 1. Load user's local ~/.buttrc as the base, fails if not found
@@ -21,11 +22,14 @@ import requests
 CONFIG_URL = "https://nullband.org/transmit/config"
 USER_BUTTRC = Path.home() / ".buttrc"
 OUTPUT_PATH = Path.home() / ".nullband_butt.conf"
-BUTT_EXEC = "/Applications/BUTT.app/Contents/MacOS/butt"
 STREAM_DURATION = 45 * 60  # 45 minutes
 PRE_FETCH = 60  # pre-fetch 1 minute before end
 
+BUTT_EXEC = shutil.which("butt") or "/Applications/BUTT.app/Contents/MacOS/butt"
 
+if not Path(BUTT_EXEC).exists():
+    raise FileNotFoundError("BUTT executable not found. Please install BUTT.")
+    
 # ----------------------------
 # Helper functions
 # ----------------------------
@@ -52,11 +56,14 @@ def fetch_and_patch_config(output_path: Path):
     and save locally, starting from user's base .buttrc.
     """
     # Fetch remote config
-    resp = requests.get(CONFIG_URL)
-    resp.raise_for_status()
-    remote_text = resp.text
-
-    # Load remote config
+    try:
+        with urlopen(CONFIG_URL) as resp:
+            remote_text = resp.read().decode("utf-8")
+    except HTTPError as e:
+        raise RuntimeError(f"HTTP error: {e.code}") from e
+    except URLError as e:
+        raise RuntimeError(f"Connection error: {e.reason}") from e    
+        # Load remote config
     remote_config = configparser.ConfigParser()
     remote_config.optionxform = str  # type: ignore
     remote_config.read_string(remote_text)
@@ -91,20 +98,25 @@ def start_butt(config_path: Path):
 # ----------------------------
 def stream_tile():
     proc = None
+    print("Launching the script, simply press Ctrl+C to stop.")
     while True:
         # Fetch & patch config
+        print("Fetching latest config from nullband...")
         fetch_and_patch_config(OUTPUT_PATH)
 
         # Launch new stream
+        print("Launching butt...")
         new_proc = start_butt(OUTPUT_PATH)
-        print("Streaming segment started...")
+        print("  > Butt launched, hit the play button to start broadcasting.")
 
         # Pre-fetch next config 1 minute before end
         if proc:
             time.sleep(STREAM_DURATION - PRE_FETCH)
+            print("Fetching new config from nullband...")
             fetch_and_patch_config(OUTPUT_PATH)
+            print("Launching new butt...")
             next_proc = start_butt(OUTPUT_PATH)
-            print("Next stream pre-fetched and started.")
+            print("Next stream pre-fetched: hit play button to start.")
 
             # Wait remaining 1 min
             time.sleep(PRE_FETCH)
